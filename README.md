@@ -1,4 +1,4 @@
-GOV
+GOVM
 ----
 
 [![GitHub release](https://img.shields.io/github/release/ljesparis/govm.svg)](https://github.com/ljesparis/govm/releases/latest)
