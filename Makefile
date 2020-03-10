@@ -8,16 +8,19 @@ PLATFORMS=darwin linux windows freebsd
 ARCHITECTURES=386 amd64 arm64 ppc64le s390x
 
 # Setup linker flags option for build that interoperate with variable names in src code
-LDFLAGS=-ldflags "-X main.Version=${VERSION} -X main.Build=${BUILD}"
+LDFLAGS=-ldflags "-X main.Version=${VERSION}"
 
 default: build
 
 all: build install
 
-build:
+dependencies:
+        go mod vendor
+
+build: dependencies
 	$(CGOFLAG) go build $(LDFLAGS) -o $(BUILDIR)/$(BINARY)
 
-build-all:
+build-all: dependencies
 	$(foreach GOOS, $(PLATFORMS),\
     	$(foreach GOARCH, $(ARCHITECTURES), $(shell export GOOS=$(GOOS); export GOARCH=$(GOARCH); go build -v -o $(BUILDIR)/$(BINARY)-$(GOOS)-$(GOARCH))))
 
