@@ -30,9 +30,6 @@ $ # Clone the repository outside the GOPATH
 $ git clone https://github.com/ljesparis/govm.git
 $ cd govm
 $
-$ # Download the project dependencies
-$ go mod vendor
-$
 $ # Build the source
 $ make
 $
@@ -40,7 +37,7 @@ $ # Install source whatever you want, by default will be installed at /usr/local
 $ make install 
 ```
 
-### Post-installation
+#### Post-installation
 By now **govm** does install go binaries at /usr/local/bin (this will change in the future). So if you want to install any source you want without any problem, follow the steps:
 ```sh
  $ # Lets change folder ownership
