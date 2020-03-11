@@ -80,11 +80,15 @@ func init() {
 
 func govCmd(cmd *cobra.Command, args []string) {
 	if len(args) == 0 {
-		cmd.Help()
+		if err := cmd.Help(); err != nil {
+			cmd.Println(args)
+		}
 		return
 	}
 }
 
 func ExecuteWithContext() {
-	Govm.ExecuteContext(GovmContext)
+	if err := Govm.ExecuteContext(GovmContext); err != nil {
+		Govm.Println(err)
+	}
 }
