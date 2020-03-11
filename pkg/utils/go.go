@@ -6,7 +6,7 @@ import (
 	"regexp"
 )
 
-func GetGoversion(goBinPath string) (string, error) {
+func GetGoVersion(goBinPath string) (string, error) {
 	buffer := bytes.NewBuffer([]byte{})
 	cmd := exec.Command(goBinPath, "version")
 	cmd.Stdout = buffer
@@ -24,5 +24,5 @@ func GetGoversion(goBinPath string) (string, error) {
 }
 
 func GetCurrentGoVersion() (string, error) {
-	return GetGoversion("go")
+	return GetGoVersion("go")
 }
