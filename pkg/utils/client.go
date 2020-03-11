@@ -16,9 +16,11 @@ import (
 )
 
 var (
-	SourceDoesNotExists = errors.New("source does not exists")
+	// ErrSourceDoesNotExists represents the error when the remote file does not exists
+	ErrSourceDoesNotExists = errors.New("remote file does not exists")
 )
 
+// Stats represents the download stats
 type Stats struct {
 	BytesDownloaded      string
 	BytesToDownload      string
@@ -57,16 +59,22 @@ func (wc *tracker) Write(p []byte) (int, error) {
 	return n, nil
 }
 
-type DownloadClient struct {
+// Client represents the client used to download files
+type Client struct {
+	// remote file
 	srcFile string
+
+	//local file
 	dstFile string
 
 	m      *sync.Mutex
 	client *http.Client
 }
 
-func DefaultClient(srcFile, dstFile string) *DownloadClient {
-	return &DownloadClient{
+// DefaultClient will create the default client to download files,
+// only receive source file and destiny file.
+func DefaultClient(srcFile, dstFile string) *Client {
+	return &Client{
 		m:       &sync.Mutex{},
 		srcFile: srcFile,
 		dstFile: dstFile,
@@ -74,7 +82,8 @@ func DefaultClient(srcFile, dstFile string) *DownloadClient {
 	}
 }
 
-func (d *DownloadClient) Download(cb dCallback) error {
+// Download method used to download the file
+func (d *Client) Download(cb dCallback) error {
 	g, _ := errgroup.WithContext(context.Background())
 
 	g.Go(func() error {
@@ -87,7 +96,7 @@ func (d *DownloadClient) Download(cb dCallback) error {
 		}
 
 		if response.StatusCode == http.StatusNotFound {
-			return SourceDoesNotExists
+			return ErrSourceDoesNotExists
 		}
 
 		buffer := bytes.NewBuffer([]byte{})

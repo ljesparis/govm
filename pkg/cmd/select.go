@@ -79,7 +79,7 @@ GoSources:
 
 			if err != nil {
 				// check if http error is 404 or anything else
-				if err == utils.SourceDoesNotExists {
+				if err == utils.ErrSourceDoesNotExists {
 					cmd.Println("Error downloading the file, go version used does not exists")
 				} else {
 					cmd.Println("Error downloading the file, please check internet connection")
