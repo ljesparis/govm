@@ -137,7 +137,7 @@ GoSymLinks:
 	goSrc := path.Join(sourceCompletePath, goSourceBin)
 	gofmtSrc := path.Join(sourceCompletePath, gofmtSourceBin)
 
-	os.Remove(goDst) // delete go symbolic link if exists
+	os.Remove(goDst)    // delete go symbolic link if exists
 	os.Remove(gofmtDst) // delete gofmt symbolic link if exists
 
 	if err := os.Symlink(goSrc, goDst); err != nil && os.IsPermission(err) {

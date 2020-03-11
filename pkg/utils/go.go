@@ -26,4 +26,3 @@ func GetGoversion(goBinPath string) (string, error) {
 func GetCurrentGoVersion() (string, error) {
 	return GetGoversion("go")
 }
-

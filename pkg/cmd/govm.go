@@ -16,11 +16,11 @@ var (
 	GovmContext = context.TODO()
 
 	Govm = &cobra.Command{
-		Use:     "govm [flags] [command]",
-		Version: "v1.0.0-alpha.0",
-		Short:   "govm is a go version manager",
+		Use:                   "govm [flags] [command]",
+		Version:               "v1.0.0-alpha.0",
+		Short:                 "govm is a go version manager",
 		DisableFlagsInUseLine: true,
-		Run:     govCmd,
+		Run:                   govCmd,
 	}
 )
 
@@ -32,9 +32,9 @@ func init() {
 	govCacheDir := path.Join(govHomeDir, "cache")
 
 	GovmContext = context.WithValue(GovmContext, defaultContextKey, map[string]string{
-		"home":          govHomeDir,
-		"sources":       govSourcesDir,
-		"cache":         govCacheDir,
+		"home":    govHomeDir,
+		"sources": govSourcesDir,
+		"cache":   govCacheDir,
 	})
 
 	// Gov.Flags().Int("verbose", 1, "verbosity level {1,2, 3}. Default: 1")
