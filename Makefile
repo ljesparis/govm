@@ -15,7 +15,7 @@ default: build
 all: build install
 
 dependencies:
-        go mod vendor
+	go mod vendor
 
 build: dependencies
 	$(CGOFLAG) go build $(LDFLAGS) -o $(BUILDIR)/$(BINARY)
