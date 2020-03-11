@@ -11,6 +11,7 @@ import (
 var (
 	govmContext = context.TODO()
 
+	//Govm represents the cli command to execute
 	Govm = &cobra.Command{
 		Use:                   "govm [flags] [command]",
 		Version:               "v1.0.0-alpha.0",
@@ -83,6 +84,7 @@ func govCmd(cmd *cobra.Command, args []string) {
 	}
 }
 
+// Run will run govm cli
 func Run() {
 	if err := Govm.ExecuteContext(govmContext); err != nil {
 		Govm.Println(err)
