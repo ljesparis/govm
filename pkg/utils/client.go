@@ -64,7 +64,7 @@ type Client struct {
 	// remote file
 	srcFile string
 
-	//local file
+	// local file
 	dstFile string
 
 	m      *sync.Mutex

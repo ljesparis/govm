@@ -6,6 +6,8 @@ import (
 	"regexp"
 )
 
+// GetGoVersion returns the current version of go which is
+// in the path passed as parameter.
 func GetGoVersion(goBinPath string) (string, error) {
 	buffer := bytes.NewBuffer([]byte{})
 	cmd := exec.Command(goBinPath, "version")
@@ -23,6 +25,11 @@ func GetGoVersion(goBinPath string) (string, error) {
 	return string(re.Find(buffer.Bytes())), nil
 }
 
+// GetCurrentGoVersion returns the current version of go which is
+// in the global path:
+//
+// unix -> $PATH
+// windows ->
 func GetCurrentGoVersion() (string, error) {
 	return GetGoVersion("go")
 }
