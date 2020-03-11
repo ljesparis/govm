@@ -3,5 +3,5 @@ package main
 import "github.com/ljesparis/govm/pkg/cmd"
 
 func main() {
-	cmd.ExecuteWithContext()
+	cmd.Run()
 }

@@ -8,12 +8,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const (
-	defaultContextKey = "gov_key"
-)
-
 var (
-	GovmContext = context.TODO()
+	govmContext = context.TODO()
 
 	Govm = &cobra.Command{
 		Use:                   "govm [flags] [command]",
@@ -31,7 +27,7 @@ func init() {
 	govSourcesDir := path.Join(govHomeDir, "sources")
 	govCacheDir := path.Join(govHomeDir, "cache")
 
-	GovmContext = context.WithValue(GovmContext, defaultContextKey, map[string]string{
+	govmContext = context.WithValue(govmContext, ctxKey, map[string]string{
 		"home":    govHomeDir,
 		"sources": govSourcesDir,
 		"cache":   govCacheDir,
@@ -87,8 +83,8 @@ func govCmd(cmd *cobra.Command, args []string) {
 	}
 }
 
-func ExecuteWithContext() {
-	if err := Govm.ExecuteContext(GovmContext); err != nil {
+func Run() {
+	if err := Govm.ExecuteContext(govmContext); err != nil {
 		Govm.Println(err)
 	}
 }
