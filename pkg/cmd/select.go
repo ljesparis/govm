@@ -13,7 +13,7 @@ import (
 
 const (
 	// Url where golang can be downloaded
-	goSourceUrl string = "https://dl.google.com/go"
+	goSourceURL string = "https://dl.google.com/go"
 )
 
 var (
@@ -39,7 +39,7 @@ func init() {
 }
 
 func selectGoVersionCmd(cmd *cobra.Command, args []string) {
-	ctx := cmd.Context().Value(defaultContextKey).(map[string]string)
+	ctx := cmd.Context().Value(ctxKey).(map[string]string)
 	cacheDir := ctx["cache"]
 	sourcesDir := ctx["sources"]
 
@@ -51,7 +51,7 @@ func selectGoVersionCmd(cmd *cobra.Command, args []string) {
 		cmd.Println("Selected package is not supported")
 		return
 	}
-	sourcesUrl := fmt.Sprintf("%s/%s", goSourceUrl, compressedSourceName)
+	sourcesURL := fmt.Sprintf("%s/%s", goSourceURL, compressedSourceName)
 	compressedCompletePath := path.Join(cacheDir, compressedSourceName)
 
 	useCache, _ := cmd.Flags().GetBool("cache")
@@ -71,7 +71,7 @@ GoSources:
 
 		if _, err := os.Stat(compressedCompletePath); os.IsNotExist(err) {
 
-			err = utils.DefaultClient(sourcesUrl, compressedCompletePath).Download(func(s *utils.Stats) {
+			err = utils.DefaultClient(sourcesURL, compressedCompletePath).Download(func(s *utils.Stats) {
 				cmd.Printf("\rdownloading %s/100%s", s.DownloadedPercentage, "%")
 			})
 
@@ -113,7 +113,7 @@ GoSources:
 		return
 	} else {
 		// Check if go source path does contain go binary.
-		if _, err := utils.GetGoversion(path.Join(sourceCompletePath, goSourceBin)); err != nil {
+		if _, err := utils.GetGoVersion(path.Join(sourceCompletePath, goSourceBin)); err != nil {
 
 			// If go binary does not exists, source path will be deleted
 			if err = os.RemoveAll(sourceCompletePath); err != nil && os.IsPermission(err) {

@@ -17,8 +17,8 @@ var (
 	}
 )
 
-func listSourcesCmd(cmd *cobra.Command, args []string) {
-	ctx := cmd.Context().Value(defaultContextKey).(map[string]string)
+func listSourcesCmd(cmd *cobra.Command, _ []string) {
+	ctx := cmd.Context().Value(ctxKey).(map[string]string)
 	cv, _ := utils.GetCurrentGoVersion()
 	dirs, err := ioutil.ReadDir(ctx["sources"])
 	if err != nil {
