@@ -78,13 +78,13 @@ func init() {
 func govCmd(cmd *cobra.Command, args []string) {
 	if len(args) == 0 {
 		if err := cmd.Help(); err != nil {
-			cmd.Println(args)
+			cmd.Println(err)
 		}
 		return
 	}
 }
 
-// Run will run govm cli
+// Run will with govm app with context
 func Run() {
 	if err := Govm.ExecuteContext(govmContext); err != nil {
 		Govm.Println(err)
