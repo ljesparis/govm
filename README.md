@@ -5,7 +5,8 @@ GOVM
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/ljesparis/govm/blob/master/LICENSE)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ljesparis/govm)](https://goreportcard.com/report/github.com/ljesparis/govm)
 
-Simple command-line go version manager.
+Download, configure and start using **go** never was so easy and faster.
+
 **Note:** By now, govm is tested on linux.
 
 <p align="center"><img src="./img/govm.gif?raw=true"/></p>
