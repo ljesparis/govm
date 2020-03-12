@@ -10,7 +10,7 @@ import (
 var (
 	listSources = &cobra.Command{
 		Use:     "list",
-		Aliases: []string{"l"},
+		Aliases: []string{"l", "ls"},
 		Short:   "List golang sources",
 		Args:    cobra.ExactValidArgs(0),
 		Run:     listSourcesCmd,
