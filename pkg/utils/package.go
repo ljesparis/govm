@@ -42,8 +42,6 @@ func isValidPackageType(pt string) (pti uint64, err error) {
 		pti = TarBinary
 	} else if pt == "msi" {
 		pti = MsiBinary
-	} else if pt == "tar.gz" {
-		pti = MsiBinary
 	} else if pt == "pkg" {
 		pti = PkgBinary
 	} else if pt == "zip" {
