@@ -82,7 +82,7 @@ func DefaultClient(srcFile, dstFile string) *Client {
 	}
 }
 
-// Download method used to download the file
+// Download will download files and show progress
 func (d *Client) Download(cb dCallback) error {
 	g, _ := errgroup.WithContext(context.Background())
 
