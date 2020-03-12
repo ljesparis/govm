@@ -7,6 +7,8 @@ import (
 	"text/template"
 )
 
+// Represent the package extension of the compressed go source code
+// that are available at https://golang.org/dl/
 const (
 	TarBinary uint64 = iota + 1
 	MsiBinary
@@ -15,27 +17,26 @@ const (
 )
 
 var (
-	UnknowPackage = errors.New("unknow package")
+	// ErrUnknowPackage error used when package is not Tar,Msi,pkg or zip
+	ErrUnknowPackage = errors.New("unknow package")
 )
 
-func GetPackageType(os string) (pts string, pti uint64) {
-	if os == "linux" || os == "darwing" || os == "freebsd" {
+// DefaultPackageType return the default package type
+// for every supported system.
+func DefaultPackageType() (pts string, pti uint64) {
+	os := runtime.GOOS
+	if os == "linux" || os == "darwin" || os == "freebsd" {
 		pts = "tar.gz"
 		pti = TarBinary
 	} else {
 		pts = "zip"
 		pti = PkgBinary
 	}
-
 	return
 }
 
-func DefaultSystemPackageType() (pts string, pti uint64) {
-	pts, pti = GetPackageType(runtime.GOOS)
-	return
-}
-
-func String2Int(pt string) (pti uint64, err error) {
+// isValidPackageType check if package type is supported
+func isValidPackageType(pt string) (pti uint64, err error) {
 
 	if pt == "tar.gz" {
 		pti = TarBinary
@@ -49,38 +50,22 @@ func String2Int(pt string) (pti uint64, err error) {
 		pti = ZipBinary
 	} else {
 		pti = 0
-		err = UnknowPackage
+		err = ErrUnknowPackage
 	}
 
 	return
 }
 
-func Int2String(pType uint64) (pt string, err error) {
+// GetPackageFilename return the compressed go source filename with
+// the go version, operating system, architecture and package type.
+func GetPackageFilename(goversion, os, arch string, pType string) (string, error) {
 
-	switch pType {
-	case TarBinary:
-		pt = "tar.gz"
-	case MsiBinary:
-		pt = "msi"
-	case PkgBinary:
-		pt = "pkg"
-	case ZipBinary:
-		pt = "zip"
-	default:
-		err = UnknowPackage
-	}
-
-	return
-}
-
-func PackageFilename1(goversion, os, arch string, pType uint64) (string, error) {
-
-	pt, err := Int2String(pType)
+	_, err := isValidPackageType(pType)
 	if err != nil {
 		return "", err
 	}
 
-	tmpl := template.New("compiledSource")
+	tmpl := template.New("compiledSourceTmpl")
 	tmpl, err = tmpl.Parse("go{{.GO_VERSION}}.{{.OS}}-{{.ARCH}}.{{.PACKAGE}}")
 	if err != nil {
 		return "", err
@@ -91,21 +76,11 @@ func PackageFilename1(goversion, os, arch string, pType uint64) (string, error) 
 		"GO_VERSION": goversion,
 		"OS":         os,
 		"ARCH":       arch,
-		"PACKAGE":    pt,
+		"PACKAGE":    pType,
 	})
 	if err != nil {
 		return "", err
 	}
 
 	return buffer.String(), nil
-}
-
-func PackageFilename2(goversion, os, arch string, pType string) (string, error) {
-
-	pt, err := String2Int(pType)
-	if err != nil {
-		return "", err
-	}
-
-	return PackageFilename1(goversion, os, arch, pt)
 }

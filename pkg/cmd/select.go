@@ -29,7 +29,7 @@ var (
 )
 
 func init() {
-	pt, _ := utils.DefaultSystemPackageType()
+	pt, _ := utils.DefaultPackageType()
 	selectSource.Example = "  gov select 1.14\n  gov s 1.14 --arch 386\n  gov sl 1.14 --os windows"
 
 	selectSource.Flags().BoolP("cache", "c", false, "cache downloaded sources")
@@ -47,7 +47,7 @@ func selectGoVersionCmd(cmd *cobra.Command, args []string) {
 	sourceName := fmt.Sprintf("go%s", userSelectedGoVersion)
 	sourceCompletePath := path.Join(sourcesDir, sourceName)
 	compressedSourceName, err := getCorrectPackage(userSelectedGoVersion, cmd)
-	if err != nil && err == utils.UnknowPackage {
+	if err != nil && err == utils.ErrUnknowPackage {
 		cmd.Println("Selected package is not supported")
 		return
 	}

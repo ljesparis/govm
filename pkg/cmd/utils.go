@@ -16,6 +16,6 @@ func getCorrectPackage(version string, cmd *cobra.Command) (p string, err error)
 	arch, _ := cmd.Flags().GetString("arch")
 	pt, _ := cmd.Flags().GetString("package")
 
-	p, err = utils.PackageFilename2(version, os, arch, pt)
+	p, err = utils.GetPackageFilename(version, os, arch, pt)
 	return
 }
