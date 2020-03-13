@@ -91,7 +91,7 @@ GoSources:
 				os.Exit(1)
 			} else {
 				corrupted = true
-				cmd.Println("go source is corrupted, will be downloaded")
+				cmd.Println("go source is corrupted")
 				goto GoSources
 			}
 		}
