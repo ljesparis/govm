@@ -26,17 +26,21 @@ func listSourcesCmd(cmd *cobra.Command, _ []string) {
 		return
 	}
 
+	cmd.Println("available sources: \n")
+
 	if len(dirs) > 0 {
 		for _, el := range dirs {
 			if el.IsDir() {
 				if el.Name() == cv {
-					cmd.Printf("%s (*)\n", el.Name())
+					cmd.Printf("=> %s\n", el.Name())
 				} else {
-					cmd.Println(el.Name())
+					cmd.Println("  ", el.Name())
 				}
 			}
 		}
 	} else {
 		cmd.Println("There's not downloaded go sources")
 	}
+
+	cmd.Println()
 }
