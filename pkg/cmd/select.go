@@ -43,74 +43,44 @@ func selectGoVersionCmd(cmd *cobra.Command, args []string) {
 	cacheDir := ctx["cache"]
 	sourcesDir := ctx["sources"]
 
+	corrupted := false
 	userSelectedGoVersion := args[0]
 	sourceName := fmt.Sprintf("go%s", userSelectedGoVersion)
 	sourceCompletePath := path.Join(sourcesDir, sourceName)
 	compressedSourceName, err := getCorrectPackage(userSelectedGoVersion, cmd)
 	if err != nil && err == utils.ErrUnknowPackage {
 		cmd.Println("Selected package is not supported")
-		return
+		os.Exit(1)
 	}
 	sourcesURL := fmt.Sprintf("%s/%s", goSourceURL, compressedSourceName)
 	compressedCompletePath := path.Join(cacheDir, compressedSourceName)
 
-	useCache, _ := cmd.Flags().GetBool("cache")
-
-	gv, _ := utils.GetCurrentGoVersion()
-	if gv == sourceName {
+	if isVersionInUse(sourceName) {
 		cmd.Println("Go version already selected")
-		return
+		os.Exit(1)
 	}
 
 GoSources:
-	// Section to download and decompress go source.
-
 	// Check if go source path exists
-	if _, err := os.Stat(sourceCompletePath); os.IsNotExist(err) || useCache {
-		cmd.Printf("Go with version %s does not exists\n", userSelectedGoVersion)
+	if _, err := os.Stat(sourceCompletePath); os.IsNotExist(err) {
 
-		if _, err := os.Stat(compressedCompletePath); os.IsNotExist(err) {
-
-			err = utils.DefaultClient(sourcesURL, compressedCompletePath).Download(func(s *utils.Stats) {
-				cmd.Printf("\rdownloading %s/100%s", s.DownloadedPercentage, "%")
-			})
-
-			cmd.Printf("\n")
-
-			if err != nil {
-				// check if http error is 404 or anything else
-				if err == utils.ErrSourceDoesNotExists {
-					cmd.Println("Error downloading the file, go version used does not exists")
-				} else {
-					cmd.Println("Error downloading the file, please check internet connection")
-				}
-				return
-			}
-
-		} else if os.IsPermission(err) {
-			cmd.Printf("Does not have permission to read the following package: %s\n", compressedSourceName)
-			return
-		} else {
-			if useCache {
-				cmd.Println("Using compressed source from cache")
-			}
+		if !corrupted {
+			cmd.Printf("Go with version %s does not exists\n", userSelectedGoVersion)
 		}
 
-		if err := archiver.Unarchive(compressedCompletePath, sourceCompletePath); err != nil && os.IsNotExist(err) {
-			cmd.PrintErrln("Error decompressing sources")
-			return
+		// download compressed source and exit if an err is returned
+		if err = downloadCompressedSource(sourcesURL, compressedCompletePath, cmd); err != nil {
+			os.Exit(1)
 		}
 
-		// Checking if cache flag was set to save compressed source
-		if !useCache {
-			if err := os.Remove(compressedCompletePath); err != nil {
-				cmd.Printf("Error deleting %s source", compressedCompletePath)
-			}
+		// trying to decompress source file
+		if err := deCompressFile(compressedCompletePath, sourceCompletePath, cmd); err != nil {
+			os.Exit(1)
 		}
 
 	} else if os.IsPermission(err) {
 		cmd.Printf("Does not have permission to access the following path: %s\n", sourceCompletePath)
-		return
+		os.Exit(1)
 	} else {
 		// Check if go source path does contain go binary.
 		if _, err := utils.GetGoVersion(path.Join(sourceCompletePath, goSourceBin)); err != nil {
@@ -118,37 +88,104 @@ GoSources:
 			// If go binary does not exists, source path will be deleted
 			if err = os.RemoveAll(sourceCompletePath); err != nil && os.IsPermission(err) {
 				cmd.Printf("Does not have permission to delete %s directory, please check", sourceCompletePath)
-				return
+				os.Exit(1)
 			} else {
+				corrupted = true
+				cmd.Println("go source is corrupted, will be downloaded")
 				goto GoSources
 			}
-		} else {
-			goto GoSymLinks
 		}
 	}
 
-GoSymLinks:
-	// Section to create symbolic links.
 	// If symbolic link already exists, will be deleted and then created.
 	// Otherwise, will be created
+	if err = createSymbolicLink(sourceCompletePath, cmd); err != nil {
+		os.Exit(1)
+	}
+}
 
+// check if go source is in use
+func isVersionInUse(sourceName string) bool {
+	gv, _ := utils.GetCurrentGoVersion()
+	return gv == sourceName
+}
+
+func downloadCompressedSource(url, compressedDstPath string, cmd *cobra.Command) error {
+
+	// Check if compressed go source file does not exists
+	if _, err := os.Stat(compressedDstPath); os.IsNotExist(err) {
+		err := utils.DefaultClient(url, compressedDstPath).Download(func(s *utils.Stats) {
+			cmd.Printf("\rdownloading: %s/100%s", s.DownloadedPercentage, "%")
+		})
+
+		cmd.Printf("\n")
+
+		if err != nil {
+
+			// check if http error is 404
+			if err == utils.ErrSourceDoesNotExists {
+				cmd.Println("Error downloading the file, go version used does not exists")
+			} else {
+				cmd.Println("Error downloading the file, please check internet connection")
+			}
+
+			return err
+		}
+	} else if os.IsPermission(err) {
+		cmd.Println("Does not have permission to read the following package")
+		return err
+	} else {
+		cmd.Println("Using compressed source from cache")
+	}
+
+	return nil
+}
+
+func deCompressFile(compressedSource, sourceDst string, cmd *cobra.Command) error {
+	useCache, _ := cmd.Flags().GetBool("cache")
+
+	cmd.Println("decompressing source")
+
+	// decompress file
+	if err := archiver.Unarchive(compressedSource, sourceDst); err != nil && os.IsNotExist(err) {
+		cmd.PrintErrln("Compressed source does not exists")
+		return err
+	} else if os.IsPermission(err) {
+		cmd.PrintErrln("Permission error")
+		return err
+	}
+
+	// Checking if cache flag was set to save compressed source
+	if !useCache {
+		if err := os.Remove(compressedSource); err != nil {
+			cmd.Printf("Error deleting %s source", compressedSource)
+		}
+	}
+
+	return nil
+}
+
+func createSymbolicLink(sourcePath string, cmd *cobra.Command) error {
 	goDst := path.Join(defaultGoBinDir, "go")
 	gofmtDst := path.Join(defaultGoBinDir, "gofmt")
-	goSrc := path.Join(sourceCompletePath, goSourceBin)
-	gofmtSrc := path.Join(sourceCompletePath, gofmtSourceBin)
+	goSrc := path.Join(sourcePath, goSourceBin)
+	gofmtSrc := path.Join(sourcePath, gofmtSourceBin)
 
 	os.Remove(goDst)    // delete go symbolic link if exists
 	os.Remove(gofmtDst) // delete gofmt symbolic link if exists
 
+	// check if a symbolic link can be created
 	if err := os.Symlink(goSrc, goDst); err != nil && os.IsPermission(err) {
 		cmd.PrintErrln("Cannot create go symlink, please check permissions")
-		return
+		return err
 	}
 
 	if err := os.Symlink(gofmtSrc, gofmtDst); err != nil && os.IsPermission(err) {
 		cmd.PrintErrln("Cannot create gofmt symlink, please check permissions")
 	}
 
-	cmd.Println("Done!")
-	cmd.Println("Go and try 'go version' command")
+	st, _ := utils.GetCurrentGoVersionAll()
+	cmd.Println(st)
+
+	return nil
 }
