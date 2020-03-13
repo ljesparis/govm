@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"io/ioutil"
+	"os"
 
 	"github.com/ljesparis/govm/pkg/utils"
 	"github.com/spf13/cobra"
@@ -20,13 +21,15 @@ var (
 func listSourcesCmd(cmd *cobra.Command, _ []string) {
 	ctx := cmd.Context().Value(ctxKey).(map[string]string)
 	cv, _ := utils.GetCurrentGoVersion()
+
 	dirs, err := ioutil.ReadDir(ctx["sources"])
 	if err != nil {
 		cmd.Println("error listing sources content")
-		return
+		os.Exit(1)
 	}
 
-	cmd.Println("available sources: \n")
+	cmd.Println("available sources:")
+	cmd.Println()
 
 	if len(dirs) > 0 {
 		for _, el := range dirs {
