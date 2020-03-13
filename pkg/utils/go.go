@@ -36,7 +36,7 @@ func GetGoVersion(goBinPath string) (string, error) {
 	return string(re.Find([]byte(st))), nil
 }
 
-// GetGoVersionAll returns the full go version
+// GetCurrentGoVersionAll returns the full go version
 func GetCurrentGoVersionAll() (string, error) {
 	return GetGoVersionAll("go")
 }
