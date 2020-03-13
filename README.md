@@ -56,7 +56,6 @@ Usage:
   govm [command]
 
 Available Commands:
-  current     Show current go version
   help        Help about any command
   list        List golang sources
   select      Select golang source
