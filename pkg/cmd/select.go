@@ -124,15 +124,17 @@ func downloadCompressedSource(url, compressedDstPath string, cmd *cobra.Command)
 
 			// check if http error is 404
 			if err == utils.ErrSourceDoesNotExists {
-				cmd.Println("Error downloading the file, go version used does not exists")
+				cmd.Println("error downloading the file, go version does not exists")
+			} else if os.IsPermission(err) {
+				cmd.Println("error downloading the file, please check govm home permissions.")
 			} else {
-				cmd.Println("Error downloading the file, please check internet connection")
+				cmd.Println("error downloading the file, please check internet connection")
 			}
 
 			return err
 		}
 	} else if os.IsPermission(err) {
-		cmd.Println("Does not have permission to read the following package")
+		cmd.Println("Does not have permission to read the package ", compressedDstPath)
 		return err
 	} else {
 		cmd.Println("Using compressed source from cache")
@@ -144,21 +146,21 @@ func downloadCompressedSource(url, compressedDstPath string, cmd *cobra.Command)
 func deCompressFile(compressedSource, sourceDst string, cmd *cobra.Command) error {
 	useCache, _ := cmd.Flags().GetBool("cache")
 
-	cmd.Println("decompressing source")
+	cmd.Println("decompress source")
 
 	// decompress file
 	if err := archiver.Unarchive(compressedSource, sourceDst); err != nil && os.IsNotExist(err) {
-		cmd.PrintErrln("Compressed source does not exists")
+		cmd.PrintErrln("compressed source does not exists")
 		return err
 	} else if os.IsPermission(err) {
-		cmd.PrintErrln("Permission error")
+		cmd.PrintErrln("does not have permission to read file ", compressedSource)
 		return err
 	}
 
 	// Checking if cache flag was set to save compressed source
 	if !useCache {
 		if err := os.Remove(compressedSource); err != nil {
-			cmd.Printf("Error deleting %s source", compressedSource)
+			cmd.Printf("Error deleting %s source\n", compressedSource)
 		}
 	}
 
@@ -185,7 +187,7 @@ func createSymbolicLink(sourcePath string, cmd *cobra.Command) error {
 	}
 
 	st, _ := utils.GetCurrentGoVersionAll()
-	cmd.Println(st)
+	cmd.Printf("version selected ==> %s\n", st)
 
 	return nil
 }

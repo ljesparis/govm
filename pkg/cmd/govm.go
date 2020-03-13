@@ -23,28 +23,24 @@ var (
 
 func init() {
 	home, _ := os.UserHomeDir()
-	govHomeDir := path.Join(home, ".govm")
-	// govConfig := path.Join(govHomeDir, ".config")
-	govSourcesDir := path.Join(govHomeDir, "sources")
-	govCacheDir := path.Join(govHomeDir, "cache")
+	govmHomeDir := path.Join(home, ".govm")
+	// govmBinDir := path.Join(govHomeDir, "bin")
+	govmSourcesDir := path.Join(govmHomeDir, "sources")
+	govmCacheDir := path.Join(govmHomeDir, "cache")
 
 	govmContext = context.WithValue(govmContext, ctxKey, map[string]string{
-		"home":    govHomeDir,
-		"sources": govSourcesDir,
-		"cache":   govCacheDir,
+		"home":    govmHomeDir,
+		"sources": govmSourcesDir,
+		"cache":   govmCacheDir,
 	})
-
-	// Gov.Flags().Int("verbose", 1, "verbosity level {1,2, 3}. Default: 1")
-	// Gov.Flags().String("cache", defaultCacheDir, "default cache directory")
-	// Gov.Flags().String("sources", defaultSourcesDir, "default sources directory")
 
 	Govm.AddCommand(listSources)
 	Govm.AddCommand(selectSource)
 
 	cobra.OnInitialize(func() {
-		if _, err := os.Stat(govHomeDir); os.IsNotExist(err) {
-			if err = os.MkdirAll(govHomeDir, 0777); err != nil {
-				Govm.Println("cannot create main gov directories like: ", govHomeDir, govSourcesDir)
+		if _, err := os.Stat(govmHomeDir); os.IsNotExist(err) {
+			if err = os.MkdirAll(govmHomeDir, 0777); err != nil {
+				Govm.Println("cannot create main gov directories like: ", govmHomeDir, govmSourcesDir)
 				os.Exit(1)
 			}
 		} else if os.IsPermission(err) {
@@ -52,25 +48,14 @@ func init() {
 			os.Exit(1)
 		}
 
-		if err := os.MkdirAll(govSourcesDir, 0777); err != nil {
-			Govm.Println("cannot create main gov directories like: ", govHomeDir, govSourcesDir)
+		if err := os.MkdirAll(govmSourcesDir, 0777); err != nil {
+			Govm.Println("cannot create main gov directories like: ", govmHomeDir, govmSourcesDir)
 			os.Exit(1)
 		}
-		if err := os.MkdirAll(govCacheDir, 0777); err != nil {
-			Govm.Println("cannot create main gov directories like: ", govHomeDir, govCacheDir)
+		if err := os.MkdirAll(govmCacheDir, 0777); err != nil {
+			Govm.Println("cannot create main gov directories like: ", govmHomeDir, govmCacheDir)
 			os.Exit(1)
 		}
-
-		/*if _, err := os.Stat(govConfig); os.IsNotExist(err) {
-			f, err := os.Create(govConfig)
-			if err != nil {
-				Gov.Println(err)
-			}
-			f.Close()
-		} else if os.IsPermission(err) {
-			Gov.Println("cannot access gov config file, please check file permissions")
-			os.Exit(1)
-		}*/
 	})
 }
 
@@ -79,7 +64,6 @@ func govCmd(cmd *cobra.Command, args []string) {
 		if err := cmd.Help(); err != nil {
 			cmd.Println(err)
 		}
-		return
 	}
 }
 
