@@ -6,9 +6,9 @@ import (
 	"regexp"
 )
 
-// GetGoVersion returns the current version of go which is
-// in the path passed as parameter.
-func GetGoVersion(goBinPath string) (string, error) {
+// GetGoVersionAll returns the full go version
+// by example: go version go1.14 linux/amd64
+func GetGoVersionAll(goBinPath string) (string, error) {
 	buffer := bytes.NewBuffer([]byte{})
 	cmd := exec.Command(goBinPath, "version")
 	cmd.Stdout = buffer
@@ -17,12 +17,28 @@ func GetGoVersion(goBinPath string) (string, error) {
 		return "", err
 	}
 
+	return string(buffer.Bytes()), nil
+}
+
+// GetGoVersion returns the current version of go which is
+// in the path passed as parameter.
+func GetGoVersion(goBinPath string) (string, error) {
+	st, err := GetGoVersionAll(goBinPath)
+	if err != nil {
+		return "", err
+	}
+
 	re, err := regexp.Compile(`go[0-9]+(.[0-9]+)*`)
 	if err != nil {
 		return "", err
 	}
 
-	return string(re.Find(buffer.Bytes())), nil
+	return string(re.Find([]byte(st))), nil
+}
+
+// GetGoVersionAll returns the full go version
+func GetCurrentGoVersionAll() (string, error) {
+	return GetGoVersionAll("go")
 }
 
 // GetCurrentGoVersion returns the current version of go which is
