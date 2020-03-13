@@ -17,7 +17,7 @@ func GetGoVersionAll(goBinPath string) (string, error) {
 		return "", err
 	}
 
-	return string(buffer.Bytes()), nil
+	return buffer.String(), nil
 }
 
 // GetGoVersion returns the current version of go which is
