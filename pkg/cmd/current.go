@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"os"
+
 	"github.com/ljesparis/govm/pkg/utils"
 	"github.com/spf13/cobra"
 )
@@ -19,8 +21,8 @@ var (
 func currentGoFunc(cmd *cobra.Command, _ []string) {
 	cv, err := utils.GetCurrentGoVersion()
 	if err != nil || len(cv) == 0 {
-		cmd.Println("there's not active go version yet")
-		return
+		cmd.Println("there's not go source downloaded")
+		os.Exit(1)
 	}
 
 	cmd.Println(cv)
