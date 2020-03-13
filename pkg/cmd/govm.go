@@ -38,7 +38,6 @@ func init() {
 	// Gov.Flags().String("cache", defaultCacheDir, "default cache directory")
 	// Gov.Flags().String("sources", defaultSourcesDir, "default sources directory")
 
-	Govm.AddCommand(currentGo)
 	Govm.AddCommand(listSources)
 	Govm.AddCommand(selectSource)
 
