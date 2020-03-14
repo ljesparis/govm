@@ -67,6 +67,7 @@ type Client struct {
 	// local file
 	dstFile string
 
+	ctx    context.Context
 	m      *sync.Mutex
 	client *http.Client
 }
@@ -79,12 +80,13 @@ func DefaultClient(srcFile, dstFile string) *Client {
 		srcFile: srcFile,
 		dstFile: dstFile,
 		client:  http.DefaultClient,
+		ctx:     context.TODO(),
 	}
 }
 
 // Download will download files and show progress
 func (d *Client) Download(cb dCallback) error {
-	g, _ := errgroup.WithContext(context.Background())
+	g, _ := errgroup.WithContext(d.ctx)
 
 	g.Go(func() error {
 		d.m.Lock()
