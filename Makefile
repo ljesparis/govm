@@ -29,6 +29,6 @@ install: build
 	cp -f $(BUILDIR)/$(BINARY) $(BINDIR)/
 
 clean:
-	rm -rf out
+	rm -rf out && rm -rf dist
 
 .PHONY: clean build install build-all all
