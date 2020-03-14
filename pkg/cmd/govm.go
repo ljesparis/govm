@@ -14,7 +14,7 @@ var (
 	//Govm represents the cli command to execute
 	Govm = &cobra.Command{
 		Use:                   "govm [flags] [command]",
-		Version:               "v1.0.0-alpha.0",
+		Version:               "v1.0.0-alpha.1",
 		Short:                 "govm is a go version manager",
 		DisableFlagsInUseLine: true,
 		Run:                   govCmd,

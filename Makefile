@@ -2,7 +2,7 @@ CGOFLAG ?= CGO_ENABLED=1
 BINDIR ?= /usr/local/bin
 BUILDIR ?= out
 
-VERSION=1.0.0-alpha.0
+VERSION=1.0.0-alpha.1
 BINARY=govm
 PLATFORMS=darwin linux windows freebsd
 ARCHITECTURES=386 amd64 arm64 ppc64le s390x
