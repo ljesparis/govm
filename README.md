@@ -4,7 +4,6 @@ GOVM
 [![GitHub release](https://img.shields.io/github/release/ljesparis/govm.svg)](https://github.com/ljesparis/govm/releases/latest)
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/ljesparis/govm/blob/master/LICENSE)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ljesparis/govm)](https://goreportcard.com/report/github.com/ljesparis/govm)
-[![GolangCI](https://golangci.com/badges/github.com/ljesparis/govm.svg)](https://golangci.com)
 
 Download, configure and start using **go** never was so easy and faster.
 
