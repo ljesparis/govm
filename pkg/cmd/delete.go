@@ -39,7 +39,7 @@ func deleteSourceCmd(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	err := filepath.Walk(cacheDir, func(path string, info os.FileInfo, err error) error {
+	_ = filepath.Walk(cacheDir, func(path string, info os.FileInfo, err error) error {
 		if strings.Contains(info.Name(), goVersion) {
 			cmd.Println("Deleting source cache")
 			_ = os.RemoveAll(path)
@@ -47,10 +47,6 @@ func deleteSourceCmd(cmd *cobra.Command, args []string) {
 
 		return nil
 	})
-
-	if err != nil {
-		os.Exit(1)
-	}
 
 	_ = os.RemoveAll(rSource)
 	cmd.Println("done!")
