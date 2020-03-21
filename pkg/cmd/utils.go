@@ -19,3 +19,9 @@ func getCorrectPackage(version string, cmd *cobra.Command) (p string, err error)
 	p, err = utils.GetPackageFilename(version, os, arch, pt)
 	return
 }
+
+// check if go source is in use
+func isVersionInUse(sourceName string) bool {
+	gv, _ := utils.GetCurrentGoVersion()
+	return gv == sourceName
+}

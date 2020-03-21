@@ -104,12 +104,6 @@ GoSources:
 	}
 }
 
-// check if go source is in use
-func isVersionInUse(sourceName string) bool {
-	gv, _ := utils.GetCurrentGoVersion()
-	return gv == sourceName
-}
-
 func downloadCompressedSource(url, compressedDstPath string, cmd *cobra.Command) error {
 
 	// Check if compressed go source file does not exists

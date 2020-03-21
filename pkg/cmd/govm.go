@@ -36,6 +36,7 @@ func init() {
 
 	Govm.AddCommand(listSources)
 	Govm.AddCommand(selectSource)
+	Govm.AddCommand(deleteSource)
 
 	cobra.OnInitialize(func() {
 		if _, err := os.Stat(govmHomeDir); os.IsNotExist(err) {
