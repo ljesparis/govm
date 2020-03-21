@@ -3,6 +3,8 @@ package cmd
 import (
 	"os"
 	"path"
+	"path/filepath"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -20,6 +22,7 @@ var (
 func deleteSourceCmd(cmd *cobra.Command, args []string) {
 	ctx := cmd.Context().Value(ctxKey).(map[string]string)
 	sourcesDir := ctx["sources"]
+	cacheDir := ctx["cache"]
 	goVersion := args[0]
 
 	if isVersionInUse(goVersion) {
@@ -36,5 +39,19 @@ func deleteSourceCmd(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
+	err := filepath.Walk(cacheDir, func(path string, info os.FileInfo, err error) error {
+		if strings.Contains(info.Name(), goVersion) {
+			cmd.Println("Deleting source cache")
+			_ = os.RemoveAll(path)
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		os.Exit(1)
+	}
+
 	_ = os.RemoveAll(rSource)
+	cmd.Println("done!")
 }
