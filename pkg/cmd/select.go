@@ -108,7 +108,7 @@ func downloadCompressedSource(url, compressedDstPath string, cmd *cobra.Command)
 
 	// Check if compressed go source file does not exists
 	if _, err := os.Stat(compressedDstPath); os.IsNotExist(err) {
-		err := utils.DefaultClient(url, compressedDstPath).Download(func(s *utils.Stats) {
+		err := utils.DefaultClient(url, compressedDstPath, perm).Download(func(s *utils.Stats) {
 			cmd.Printf("\rdownloading: %s/100%s", s.DownloadedPercentage, "%")
 		})
 

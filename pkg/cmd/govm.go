@@ -8,6 +8,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	// common permission
+	perm os.FileMode = 0770
+)
+
 var (
 	govmContext = context.TODO()
 
@@ -17,14 +22,23 @@ var (
 		Version:               "v1.0.0-alpha.1",
 		Short:                 "govm is a go version manager",
 		DisableFlagsInUseLine: true,
-		Run:                   govCmd,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				if err := cmd.Help(); err != nil {
+					cmd.Println(err)
+				}
+			}
+		},
 	}
 )
 
 func init() {
+	Govm.AddCommand(listSources)
+	Govm.AddCommand(selectSource)
+	Govm.AddCommand(deleteSource)
+
 	home, _ := os.UserHomeDir()
 	govmHomeDir := path.Join(home, ".govm")
-	// govmBinDir := path.Join(govHomeDir, "bin")
 	govmSourcesDir := path.Join(govmHomeDir, "sources")
 	govmCacheDir := path.Join(govmHomeDir, "cache")
 
@@ -34,38 +48,21 @@ func init() {
 		"cache":   govmCacheDir,
 	})
 
-	Govm.AddCommand(listSources)
-	Govm.AddCommand(selectSource)
-	Govm.AddCommand(deleteSource)
-
 	cobra.OnInitialize(func() {
-		if _, err := os.Stat(govmHomeDir); os.IsNotExist(err) {
-			if err = os.MkdirAll(govmHomeDir, 0777); err != nil {
-				Govm.Println("cannot create main gov directories like: ", govmHomeDir, govmSourcesDir)
-				os.Exit(1)
-			}
-		} else if os.IsPermission(err) {
-			Govm.Println("cannot access gov home, please check directory permissions")
+		if err := os.MkdirAll(govmHomeDir, perm); os.IsPermission(err) {
+			Govm.Println("cannot create govm home directory, please check permissions.")
 			os.Exit(1)
 		}
 
-		if err := os.MkdirAll(govmSourcesDir, 0777); err != nil {
-			Govm.Println("cannot create main gov directories like: ", govmHomeDir, govmSourcesDir)
+		if err := os.MkdirAll(govmSourcesDir, perm); os.IsPermission(err) {
+			Govm.Println("cannot create sources directory, please check home folder permissions")
 			os.Exit(1)
 		}
-		if err := os.MkdirAll(govmCacheDir, 0777); err != nil {
-			Govm.Println("cannot create main gov directories like: ", govmHomeDir, govmCacheDir)
+		if err := os.MkdirAll(govmCacheDir, perm); os.IsPermission(err) {
+			Govm.Println("cannot create cache directory, please check home folder permissions")
 			os.Exit(1)
 		}
 	})
-}
-
-func govCmd(cmd *cobra.Command, args []string) {
-	if len(args) == 0 {
-		if err := cmd.Help(); err != nil {
-			cmd.Println(err)
-		}
-	}
 }
 
 // Run will with govm app with context

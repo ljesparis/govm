@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"math"
 	"net/http"
+	"os"
 	"sync"
 
 	"github.com/dustin/go-humanize"
@@ -67,6 +68,9 @@ type Client struct {
 	// local file
 	dstFile string
 
+	// local file permission
+	dstPerm os.FileMode
+
 	ctx    context.Context
 	m      *sync.Mutex
 	client *http.Client
@@ -74,10 +78,11 @@ type Client struct {
 
 // DefaultClient will create the default client to download files,
 // only receive source file and destiny file.
-func DefaultClient(srcFile, dstFile string) *Client {
+func DefaultClient(srcFile, dstFile string, perm os.FileMode) *Client {
 	return &Client{
 		m:       &sync.Mutex{},
 		srcFile: srcFile,
+		dstPerm: perm,
 		dstFile: dstFile,
 		client:  http.DefaultClient,
 		ctx:     context.TODO(),
@@ -111,7 +116,7 @@ func (d *Client) Download(cb dCallback) error {
 			return err
 		}
 
-		err = ioutil.WriteFile(d.dstFile, buffer.Bytes(), 0777)
+		err = ioutil.WriteFile(d.dstFile, buffer.Bytes(), d.dstPerm)
 		if err != nil {
 			return err
 		}
