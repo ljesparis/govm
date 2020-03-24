@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"runtime"
+	"strings"
 	"text/template"
 )
 
@@ -21,6 +22,17 @@ var (
 	ErrUnknowPackage = errors.New("unknow package")
 )
 
+// IsValidOS check if os passed as parameter is supported
+func IsOSSupported(os string) bool {
+	oss := []string{"linux", "darwin", "freebsd", "windows"}
+	for _, tmp := range oss {
+		if strings.Compare(tmp, os) == 0 {
+			return true
+		}
+	}
+	return false
+}
+
 // DefaultPackageType return the default package type
 // for every supported system.
 func DefaultPackageType() (pts string, pti uint64) {
@@ -35,8 +47,8 @@ func DefaultPackageType() (pts string, pti uint64) {
 	return
 }
 
-// isValidPackageType check if package type is supported
-func isValidPackageType(pt string) (pti uint64, err error) {
+// IsPackageTypeSupported check if package type is supported
+func IsPackageTypeSupported(pt string) (pti uint64, err error) {
 
 	if pt == "tar.gz" {
 		pti = TarBinary
@@ -58,7 +70,7 @@ func isValidPackageType(pt string) (pti uint64, err error) {
 // the go version, operating system, architecture and package type.
 func GetPackageFilename(goversion, os, arch string, pType string) (string, error) {
 
-	_, err := isValidPackageType(pType)
+	_, err := IsPackageTypeSupported(pType)
 	if err != nil {
 		return "", err
 	}

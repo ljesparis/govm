@@ -5,6 +5,7 @@ import (
 	"os"
 	"path"
 	"runtime"
+	"strings"
 
 	"github.com/ljesparis/govm/pkg/utils"
 	"github.com/mholt/archiver/v3"
@@ -42,6 +43,17 @@ func selectGoVersionCmd(cmd *cobra.Command, args []string) {
 	ctx := cmd.Context().Value(ctxKey).(map[string]string)
 	cacheDir := ctx["cache"]
 	sourcesDir := ctx["sources"]
+
+	// check if selected source is compatible with current
+	// operating system
+	tmp, _ := cmd.Flags().GetString("os")
+	if utils.IsOSSupported(tmp) && strings.Compare(tmp, runtime.GOOS) != 0 {
+		cmd.Println("current operating system does not support '" + tmp + "' binaries.")
+		os.Exit(1)
+	} else if !utils.IsOSSupported(tmp) && strings.Compare(tmp, runtime.GOOS) != 0 {
+		cmd.Println("unknown operating system.")
+		os.Exit(1)
+	}
 
 	corrupted := false
 	userSelectedGoVersion := args[0]
