@@ -3,6 +3,7 @@ package cmd
 import (
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"github.com/ljesparis/govm/pkg/utils"
 	"github.com/spf13/cobra"
@@ -34,10 +35,12 @@ func listSourcesCmd(cmd *cobra.Command, _ []string) {
 	if len(dirs) > 0 {
 		for _, el := range dirs {
 			if el.IsDir() {
-				if el.Name() == cv {
-					cmd.Printf("=> %s\n", el.Name())
+				oldName := el.Name()
+				newName := strings.ReplaceAll(oldName, "go", "")
+				if oldName == cv {
+					cmd.Printf("=> %s\n", newName)
 				} else {
-					cmd.Println("  ", el.Name())
+					cmd.Println("  ", newName)
 				}
 			}
 		}
