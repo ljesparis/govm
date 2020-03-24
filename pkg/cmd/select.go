@@ -49,14 +49,14 @@ func selectGoVersionCmd(cmd *cobra.Command, args []string) {
 	sourceCompletePath := path.Join(sourcesDir, sourceName)
 	compressedSourceName, err := getCorrectPackage(userSelectedGoVersion, cmd)
 	if err != nil && err == utils.ErrUnknowPackage {
-		cmd.Println("Selected package is not supported")
+		cmd.Println("selected package is not supported")
 		os.Exit(1)
 	}
 	sourcesURL := fmt.Sprintf("%s/%s", goSourceURL, compressedSourceName)
 	compressedCompletePath := path.Join(cacheDir, compressedSourceName)
 
 	if isVersionInUse(sourceName) {
-		cmd.Println("Go version already selected")
+		cmd.Println("go version already selected")
 		os.Exit(1)
 	}
 
@@ -65,7 +65,7 @@ GoSources:
 	if _, err := os.Stat(sourceCompletePath); os.IsNotExist(err) {
 
 		if !corrupted {
-			cmd.Printf("Go with version %s does not exists\n", userSelectedGoVersion)
+			cmd.Printf("go with version %s does not exists\n", userSelectedGoVersion)
 		}
 
 		// download compressed source and exit if an err is returned
@@ -79,7 +79,7 @@ GoSources:
 		}
 
 	} else if os.IsPermission(err) {
-		cmd.Printf("Does not have permission to access the following path: %s\n", sourceCompletePath)
+		cmd.Printf("does not have permission to access the following path: %s\n", sourceCompletePath)
 		os.Exit(1)
 	} else {
 		// Check if go source path does contain go binary.
@@ -87,7 +87,7 @@ GoSources:
 
 			// If go binary does not exists, source path will be deleted
 			if err = os.RemoveAll(sourceCompletePath); err != nil && os.IsPermission(err) {
-				cmd.Printf("Does not have permission to delete %s directory, please check", sourceCompletePath)
+				cmd.Printf("does not have permission to delete %s directory, please check", sourceCompletePath)
 				os.Exit(1)
 			} else {
 				corrupted = true
@@ -128,10 +128,10 @@ func downloadCompressedSource(url, compressedDstPath string, cmd *cobra.Command)
 			return err
 		}
 	} else if os.IsPermission(err) {
-		cmd.Println("Does not have permission to read the package ", compressedDstPath)
+		cmd.Println("does not have permission to read the package ", compressedDstPath)
 		return err
 	} else {
-		cmd.Println("Using compressed source from cache")
+		cmd.Println("using compressed source from cache")
 	}
 
 	return nil
@@ -140,7 +140,7 @@ func downloadCompressedSource(url, compressedDstPath string, cmd *cobra.Command)
 func deCompressFile(compressedSource, sourceDst string, cmd *cobra.Command) error {
 	useCache, _ := cmd.Flags().GetBool("cache")
 
-	cmd.Println("decompress source")
+	cmd.Println("decompressing source")
 
 	// decompress file
 	if err := archiver.Unarchive(compressedSource, sourceDst); err != nil && os.IsNotExist(err) {
@@ -154,7 +154,7 @@ func deCompressFile(compressedSource, sourceDst string, cmd *cobra.Command) erro
 	// Checking if cache flag was set to save compressed source
 	if !useCache {
 		if err := os.Remove(compressedSource); err != nil {
-			cmd.Printf("Error deleting %s source\n", compressedSource)
+			cmd.Printf("error deleting %s source\n", compressedSource)
 		}
 	}
 

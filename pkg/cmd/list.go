@@ -45,7 +45,7 @@ func listSourcesCmd(cmd *cobra.Command, _ []string) {
 			}
 		}
 	} else {
-		cmd.Println("There's not downloaded go sources")
+		cmd.Println("[*] there's not downloaded go sources")
 	}
 
 	cmd.Println()
