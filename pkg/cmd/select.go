@@ -34,6 +34,7 @@ func init() {
 	selectSource.Example = "  gov select 1.14\n  gov s 1.14 --arch 386\n  gov sl 1.14 --os windows"
 
 	selectSource.Flags().BoolP("cache", "c", false, "cache downloaded sources")
+	selectSource.Flags().Bool("force-download", false, "force download compressed source download")
 	selectSource.Flags().String("os", runtime.GOOS, "os compatible sources")
 	selectSource.Flags().String("arch", runtime.GOARCH, "os compatible architecture")
 	selectSource.Flags().String("package", pt, "default package type")
@@ -44,14 +45,9 @@ func selectGoVersionCmd(cmd *cobra.Command, args []string) {
 	cacheDir := ctx["cache"]
 	sourcesDir := ctx["sources"]
 
-	// check if selected source is compatible with current
-	// operating system
-	tmp, _ := cmd.Flags().GetString("os")
-	if utils.IsOSSupported(tmp) && strings.Compare(tmp, runtime.GOOS) != 0 {
-		cmd.Println("current operating system does not support '" + tmp + "' binaries.")
-		os.Exit(1)
-	} else if !utils.IsOSSupported(tmp) && strings.Compare(tmp, runtime.GOOS) != 0 {
-		cmd.Println("unknown operating system.")
+	force, _ := cmd.Flags().GetBool("force-download")
+	if err := checkOS(cmd); !force && err != nil {
+		cmd.Println(err)
 		os.Exit(1)
 	}
 
@@ -152,22 +148,36 @@ func downloadCompressedSource(url, compressedDstPath string, cmd *cobra.Command)
 func deCompressFile(compressedSource, sourceDst string, cmd *cobra.Command) error {
 	useCache, _ := cmd.Flags().GetBool("cache")
 
-	cmd.Println("decompressing source")
-
-	// decompress file
-	if err := archiver.Unarchive(compressedSource, sourceDst); err != nil && os.IsNotExist(err) {
-		cmd.PrintErrln("compressed source does not exists")
-		return err
-	} else if os.IsPermission(err) {
-		cmd.PrintErrln("does not have permission to read file ", compressedSource)
-		return err
+	removeCache := func() {
+		// Checking if cache flag was set to save compressed source
+		if !useCache {
+			cmd.Println("deleting cache: ", compressedSource)
+			if err := os.Remove(compressedSource); err != nil {
+				cmd.Printf("error deleting %s source\n", compressedSource)
+			}
+		} else {
+			cmd.Println("cached compressed source: ", compressedSource)
+		}
 	}
 
-	// Checking if cache flag was set to save compressed source
-	if !useCache {
-		if err := os.Remove(compressedSource); err != nil {
-			cmd.Printf("error deleting %s source\n", compressedSource)
+	if err := checkOS(cmd); err == nil {
+		cmd.Println("decompressing source")
+
+		// decompress file
+		if err := archiver.Unarchive(compressedSource, sourceDst); err != nil && os.IsNotExist(err) {
+			cmd.Println("compressed source does not exists")
+			return err
+		} else if os.IsPermission(err) {
+			cmd.Println("does not have permission to read file ", compressedSource)
+			return err
 		}
+
+		removeCache()
+	} else {
+		errMsg := "downloaded source is not supported by the current os, it will not be decompressed"
+		cmd.Println(errMsg)
+		removeCache()
+		return fmt.Errorf(errMsg)
 	}
 
 	return nil
@@ -194,6 +204,19 @@ func createSymbolicLink(sourcePath string, cmd *cobra.Command) error {
 
 	st, _ := utils.GetCurrentGoVersionAll()
 	cmd.Printf("version selected ==> %s\n", st)
+
+	return nil
+}
+
+// checkOS check if selected source is compatible with current
+// operating system
+func checkOS(cmd *cobra.Command) error {
+	tmp, _ := cmd.Flags().GetString("os")
+	if utils.IsOSSupported(tmp) && strings.Compare(tmp, runtime.GOOS) != 0 {
+		return fmt.Errorf("current operating system does not support '%s' binaries", tmp)
+	} else if !utils.IsOSSupported(tmp) && strings.Compare(tmp, runtime.GOOS) != 0 {
+		return fmt.Errorf("unknown operating system")
+	}
 
 	return nil
 }
