@@ -28,11 +28,7 @@ func GetGoVersion(goBinPath string) (string, error) {
 		return "", err
 	}
 
-	re, err := regexp.Compile(`go[0-9]+(.[0-9]+)*`)
-	if err != nil {
-		return "", err
-	}
-
+	re, _ := regexp.Compile(`go[0-9]+(.[0-9]+)*`)
 	return string(re.Find([]byte(st))), nil
 }
 
