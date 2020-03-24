@@ -55,6 +55,7 @@ Usage:
   govm [command]
 
 Available Commands:
+  delete      Delete golang source
   help        Help about any command
   list        List golang sources
   select      Select golang source
