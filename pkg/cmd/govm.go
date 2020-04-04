@@ -4,7 +4,6 @@ import (
 	"context"
 	"os"
 	"path"
-	"runtime"
 
 	"github.com/spf13/cobra"
 )
@@ -65,11 +64,9 @@ func init() {
 			Govm.Println("cannot create cache directory, please check home folder permissions")
 			os.Exit(1)
 		}
-		if runtime.GOOS == "windows" {
-			if err := os.MkdirAll(govmBinDir, perm); os.IsPermission(err) {
-				Govm.Println("cannot create binary directory, please check home folder permissions")
-				os.Exit(1)
-			}
+		if err := os.MkdirAll(govmBinDir, perm); os.IsPermission(err) {
+			Govm.Println("cannot create binary directory, please check home folder permissions")
+			os.Exit(1)
 		}
 	})
 }
