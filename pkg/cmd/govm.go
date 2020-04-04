@@ -42,13 +42,7 @@ func init() {
 	govmHomeDir := path.Join(home, ".govm")
 	govmSourcesDir := path.Join(govmHomeDir, "sources")
 	govmCacheDir := path.Join(govmHomeDir, "cache")
-	
-	var govmBinDir string
-	if runtime.GOOS == "windows" {
-		govmBinDir = path.Join(govmHomeDir, "bin")
-	} else {
-		govmBinDir = path.Join(home, defaultGoBinDir)
-	}
+	govmBinDir := binDir(govmHomeDir)
 
 	govmContext = context.WithValue(govmContext, ctxKey, map[string]string{
 		"home":    govmHomeDir,
