@@ -41,7 +41,13 @@ func init() {
 	govmHomeDir := path.Join(home, ".govm")
 	govmSourcesDir := path.Join(govmHomeDir, "sources")
 	govmCacheDir := path.Join(govmHomeDir, "cache")
-	govmBinDir := path.Join(home, defaultGoBinDir)
+	
+	var govmBinDir string
+	if runtime.GOOS == "windows" {
+		govmBinDir = path.Join(govmHomeDir, "bin")
+	} else {
+		govmBinDir = path.Join(home, defaultGoBinDir)
+	}
 
 	govmContext = context.WithValue(govmContext, ctxKey, map[string]string{
 		"home":    govmHomeDir,
@@ -63,6 +69,12 @@ func init() {
 		if err := os.MkdirAll(govmCacheDir, perm); os.IsPermission(err) {
 			Govm.Println("cannot create cache directory, please check home folder permissions")
 			os.Exit(1)
+		}
+		if runtime.GOOS == "windows" {
+			if err := os.MkdirAll(govmBinDir, perm); os.IsPermission(err) {
+				Govm.Println("cannot create binary directory, please check home folder permissions")
+				os.Exit(1)
+			}
 		}
 	})
 }
