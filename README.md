@@ -46,7 +46,8 @@ Include this path into PATH environment variable if it does not exists already.
 
 ##### Windows 
 
-Coming soon
+On windows, govm will install go sources into C:\Users\%USERPROFILE%\.govm\bin directory,
+make sure to add this folder into environment variables.
 
 ## Usage
 
