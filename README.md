@@ -41,12 +41,12 @@ $ make install
 #### Post-installation
 
 ##### Linux
-On linux, govm will install go sources into ~/.local/bin directory on unix.
+On linux, govm will install go sources into **~/.local/bin** directory on unix.
 Include this path into PATH environment variable if it does not exists already.
 
 ##### Windows 
 
-On windows, govm will install go sources into C:\Users\%USERPROFILE%\.govm\bin directory,
+On windows, govm will install go sources into **C:\Users\%USERPROFILE%\.govm\bin** directory,
 make sure to add this folder into environment variables.
 
 ## Usage
