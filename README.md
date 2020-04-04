@@ -24,7 +24,7 @@ You can install pre-compiled binaries or compile from source.
 #### Pre-compiled binaries
 Download the latest released version from [releases page](https://github.com/ljesparis/govm/releases) and copy to the desired location.
 
-#### Source
+#### Source (by now only supported on unix)
 Follow the steps:
 ```sh
 $ # Clone the repository outside the GOPATH
