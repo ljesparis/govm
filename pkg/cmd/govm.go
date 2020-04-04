@@ -41,11 +41,13 @@ func init() {
 	govmHomeDir := path.Join(home, ".govm")
 	govmSourcesDir := path.Join(govmHomeDir, "sources")
 	govmCacheDir := path.Join(govmHomeDir, "cache")
+	govmBinDir := path.Join(home, defaultGoBinDir)
 
 	govmContext = context.WithValue(govmContext, ctxKey, map[string]string{
 		"home":    govmHomeDir,
 		"sources": govmSourcesDir,
 		"cache":   govmCacheDir,
+		"bin":     govmBinDir,
 	})
 
 	cobra.OnInitialize(func() {

@@ -184,8 +184,11 @@ func deCompressFile(compressedSource, sourceDst string, cmd *cobra.Command) erro
 }
 
 func createSymbolicLink(sourcePath string, cmd *cobra.Command) error {
-	goDst := path.Join(defaultGoBinDir, "go")
-	gofmtDst := path.Join(defaultGoBinDir, "gofmt")
+	ctx := cmd.Context().Value(ctxKey).(map[string]string)
+	binDir := ctx["bin"]
+
+	goDst := path.Join(binDir, "go")
+	gofmtDst := path.Join(binDir, "gofmt")
 	goSrc := path.Join(sourcePath, goSourceBin)
 	gofmtSrc := path.Join(sourcePath, gofmtSourceBin)
 

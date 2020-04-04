@@ -39,11 +39,14 @@ $ make install
 ```
 
 #### Post-installation
-By now **govm** does install go binaries at /usr/local/bin (this will change in the future). So if you want to install any source you want without any problem, follow the steps:
-```sh
- $ # Lets change folder ownership
- $ sudo chown leonardoem:leonardoem /usr/local/bin
-```
+
+##### Linux
+On linux, govm will install go sources into ~/.local/bin directory on unix.
+Include this path into PATH environment variable if it does not exists already.
+
+##### Windows 
+
+Coming soon
 
 ## Usage
 
