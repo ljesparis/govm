@@ -14,6 +14,7 @@ Download, configure and start using **go** never was so easy and faster.
 ---
 * [Installation](#installation)
 * [Usage](#usage)
+* [Get Involved](#get-involved)
 
 ---
 
@@ -71,3 +72,7 @@ Flags:
 Use "govm [command] --help" for more information about a command.
 
 ```
+
+## Get Involved
+
+Pull requests are welcome!. Submit github issues for any feature enhancements, bugs or documentation problems.
