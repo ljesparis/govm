@@ -34,4 +34,7 @@ clean:
 release-no-publish:
 	export VERSION=$(VERSION) && goreleaser release --skip-publish
 
+snapshot:
+	export VERSION=$(VERSION) && goreleaser --snapshot
+
 .PHONY: clean build install build-all all
