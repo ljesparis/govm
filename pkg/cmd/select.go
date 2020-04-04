@@ -187,8 +187,8 @@ func createSymbolicLink(sourcePath string, cmd *cobra.Command) error {
 	ctx := cmd.Context().Value(ctxKey).(map[string]string)
 	binDir := ctx["bin"]
 
-	goDst := path.Join(binDir, "go")
-	gofmtDst := path.Join(binDir, "gofmt")
+	goDst := path.Join(binDir, goBin)
+	gofmtDst := path.Join(binDir, gofmtBin)
 	goSrc := path.Join(sourcePath, goSourceBin)
 	gofmtSrc := path.Join(sourcePath, gofmtSourceBin)
 
