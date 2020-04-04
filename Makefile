@@ -31,4 +31,7 @@ install: build
 clean:
 	rm -rf out && rm -rf dist
 
+release-no-publish:
+	export VERSION=$(VERSION) && goreleaser release --skip-publish
+
 .PHONY: clean build install build-all all
